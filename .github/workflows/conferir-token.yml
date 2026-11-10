@@ -1,0 +1,15 @@
+name: Conferir token
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Conferir de qual conta e o token
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: "17841471258169617"
+        run: python3 publicar.py --conferir

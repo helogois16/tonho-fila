@@ -1,0 +1,31 @@
+name: Publicar Reels
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+concurrency:
+  group: publicar
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publicar o Reel da hora
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: "17841471258169617"
+          IG_API_BASE: https://graph.facebook.com
+          IG_USERNAME: deuruimtonho
+          PUBLIC_BASE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: python3 publicar.py
+      - name: Guardar o estado da fila
+        if: always()
+        run: |
+          git config user.name "agente-instagram"
+          git config user.email "agente-instagram@users.noreply.github.com"
+          git add fila.json
+          git diff --cached --quiet || (git commit -m "Atualiza a fila" && git pull --rebase && git push)
